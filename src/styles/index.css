@@ -18,12 +18,13 @@ html.sequence-mode{
   --muyMal: #E0358F;
 }
 html.rogue-mode{
-  --main: #DECDE5;
+  /* --main: #DECDE5; */
+  --main: #D4C5ED;
   --accent: #5B3D66;
   --dark: #1A0D18;
   --light: #EEEBE9;
   --statsBgSecondary: #5F416A;
-  --muyMal: #C2356B;
+  --muyMal: #E84A3D;
 }
 
 html{
@@ -68,6 +69,7 @@ button, input{
 .customTooltip {
   --bs-tooltip-opacity: 1 !important;
   position: fixed !important;
+  user-select: none;
 }
 .customTooltip .tooltip-inner{
   background-color: var(--dark);
@@ -79,6 +81,12 @@ button, input{
   white-space: normal;
   text-align: justify;
 }
+
+.modal-title{
+  user-select: none;
+}
+
+
 
 /* .success{
   animation: twinkleSuccess 1s steps(1);

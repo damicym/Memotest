@@ -160,13 +160,22 @@ html.sequence-mode .stats::after {
   background: rgba(240, 244, 239, 0.2); /* var light en RGB */
   border-radius: 13px;
   padding: 1px;
+  text-align: center;
+}
+
+.floorNControlsContainar{
+  display: flex;
+  gap: 25px;
+  position: absolute;
+  grid-column: 3;
+  align-items: center;
 }
 
 .controlsContainer{
-  grid-column: 3;
+  /* grid-column: 3; */
   display: flex;
   gap: 15px;
-  position: absolute;
+  /* position: absolute; */
   align-items: center;
   justify-content: center;
 }
@@ -191,6 +200,7 @@ html.sequence-mode .stats::after {
 button.control{
   cursor: pointer;
   padding: 5px;
+  /* transition: all 0.5s; */
 }
 
 /* #region hint */
@@ -214,6 +224,7 @@ button.control{
   font-weight: 600;
   border: 2px solid var(--light);
   z-index: 1;
+  /* transition: all 0.5s; */
 }
 
 .loadingHint{

@@ -222,8 +222,8 @@ export function inicializarFichas(totalGroups, fichasPerGroup, gameMode, suffle 
 export function getGroupsNFichasPerG(gameMode, sizeIndex){
     if(gameMode === GAME_MODES.ROGUE) {
         return {
-        groups: 10,
-        fichasPerGroup: GAME_RULES.CLASSIC_GROUPS
+        groups: GAME_RULES.ROGUE_BASE_GROUPS,
+        fichasPerGroup: GAME_RULES.CLASSIC_FPG
         }
     } else {
         if(sizeIndex >= TABLERO_TYPES[gameMode].length) {

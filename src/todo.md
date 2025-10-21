@@ -1,10 +1,25 @@
+# very current
+  - perder cuando termine el tiempo
+
+# styles
+  - averiguar como se muestra piso en otros roguelikes
+  - no se ve bien el coso de stats
+  - sacar el '0s' en '2m 0s'
+  - agarrar libreria de iconos pixelart para las cosas especiales
+  - en ves de nº de piso, agarrar icono representativo, nombre, fondo, icono y color de ficha-back, y nº
+  - icono de timer arriba a la izquierda del div de timer? con aire alrededor? y un cosito verde q diga +30?
+
 # roguelike
-- subida de piso (se va agrandando cada vez q completas)
-  - cuando ganas, se hace un semi-reset
-  - 
-- teimpo en contra
-- progressbar, selectedSize
-- fichas con poderes (+tiempo, revelar una ficha, fichas trampa q escondan fichas) (tendrian q ser pares y quedarse disabled apenas se dan vuelta)  
+- fichas con poderes (+tiempo, revelar una ficha, fichas trampa q escondan fichas) (tendrian q ser pares y quedarse disabled apenas se dan vuelta) 
+- ¿cuando subis de piso se hace doble el reset? 
+
+# repensar
+  - reprensar progressbar y selectedSize
+  - repensar acciones de subida de piso
+    - mostrar o no stats o q info
+    - desabilitar botones?
+    - confetti?
+    - carteles?
 
 # ideas
 - q aparezca el tiempo antes de empezar
@@ -24,6 +39,7 @@
 # extras
 - todo esto tendria carteles y animaciones que le den dinamismo
 - ?slider ("personalizado" en vez de icono, sacarlo, o ponerlo dentro de config (¿solo input de ancho?))
+- personalización para secuencia y muestra de a cuántos fichasPerGroup va a jugar
 - ¿pixelart?: fichas solo con iconos pixelart, las especiales tienen nombre
 - responsive  
 

@@ -90,6 +90,7 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+  /* transform: translateZ(0); */
 }
 
 .ficha-front{

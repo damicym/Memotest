@@ -12,7 +12,7 @@ function Opciones({ totalGroups, setTotalGroups, prevValuePairs, gameMode, setGa
     const [isAnimating, setIsAnimating] = useState(false);
     const [fancyTitle, setFancyTitle] = useState(getFancyModeName(gameMode))
 
-    const handlePairsChange = (newGroups, newFichasPerG = GAME_RULES.CLASSIC_GROUPS) => {
+    const handlePairsChange = (newGroups, newFichasPerG = GAME_RULES.CLASSIC_FPG) => {
         let expectedNumber = Number(newGroups)
         const direction = expectedNumber > prevValuePairs.current ? "up" : "down"
         if(!isPrimeOrBanned(expectedNumber, GAME_RULES.EXCLUDED_Q_PAIRS)) {
@@ -71,7 +71,7 @@ function Opciones({ totalGroups, setTotalGroups, prevValuePairs, gameMode, setGa
                         <h1>{fancyTitle}</h1>
                         <div className="modeInfo">
                             <OverlayTrigger
-                                delay={{ show: 100, hide: 0 }}
+                                delay={{ show: 75, hide: 0 }}
                                 key='infoTitleOverlay'
                                 placement='right'
                                 overlay={
