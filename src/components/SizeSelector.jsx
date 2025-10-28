@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { GAME_MODES, GAME_RULES, TABLERO_TYPES } from "./Juego"
+import { GAME_MODES, GAME_RULES, TABLERO_TYPES } from "../libs/gameConfig"
 import { PiSlidersHorizontal as SliderIcon } from "react-icons/pi";
 import Modal from 'react-bootstrap/Modal';
 

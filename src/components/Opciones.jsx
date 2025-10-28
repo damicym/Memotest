@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { isPrimeOrBanned, getClosestNotPrimeOrBanned, getFancyModeName } from "../libs/myFunctions"
-import { GAME_RULES, GAME_MODES, GAME_MODES_DESCRIPTIONS, TIMINGS } from "./Juego"
+import { GAME_RULES, GAME_MODES, GAME_MODES_DESCRIPTIONS, TIMINGS } from "../libs/gameConfig"
 import { FaInfoCircle as InfoIcon } from "react-icons/fa";
 import { LiaExchangeAltSolid as ChangeModeIcon } from "react-icons/lia";
 import Tooltip from 'react-bootstrap/Tooltip';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import SizeSelector from "./SizeSelector";
 
-function Opciones({ totalGroups, setTotalGroups, prevValuePairs, gameMode, setGameMode, selectedSize, setSelectedSize, setFichasPerGroup, prevFichasPerGroup }){
+function Opciones({ totalGroups, setTotalGroups, prevValuePairs, gameMode, setGameMode, selectedSize, setSelectedSize, setFichasPerGroup, prevFichasPerGroup, setTimer, setRealTimer, secondsInterval }){
     const [animationClass, setAnimationClass] = useState("");
     const [isAnimating, setIsAnimating] = useState(false);
     const [fancyTitle, setFancyTitle] = useState(getFancyModeName(gameMode))
@@ -33,6 +33,9 @@ function Opciones({ totalGroups, setTotalGroups, prevValuePairs, gameMode, setGa
 
     const changeMode = () => {
         if(isAnimating) return
+        clearInterval(secondsInterval.current)
+        setRealTimer(0)
+        setTimer(gameMode === GAME_MODES.CLASSIC ? TIMINGS.ROGUE_INITIAL_SECS : 0)
         setIsAnimating(true)
         setAnimationClass("slide-exit")
         setGameMode(prev => {

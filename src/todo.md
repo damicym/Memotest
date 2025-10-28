@@ -1,30 +1,15 @@
-# very current
-  - perder cuando termine el tiempo
-
 # styles
+  - poner el floorDisplat mas grande? seguir probando, plantearse si va bien
+  - hacer lo mismo que con el icono del timer?
   - averiguar como se muestra piso en otros roguelikes
-  - no se ve bien el coso de stats
-  - sacar el '0s' en '2m 0s'
-  - agarrar libreria de iconos pixelart para las cosas especiales
-  - en ves de nº de piso, agarrar icono representativo, nombre, fondo, icono y color de ficha-back, y nº
-  - icono de timer arriba a la izquierda del div de timer? con aire alrededor? y un cosito verde q diga +30?
+    - en ves de nº de piso, agarrar icono tipo emoji representativo (pixelart?), nombre, fondo, icono y color de ficha-back, y nº
 
 # roguelike
 - fichas con poderes (+tiempo, revelar una ficha, fichas trampa q escondan fichas) (tendrian q ser pares y quedarse disabled apenas se dan vuelta) 
-- ¿cuando subis de piso se hace doble el reset? 
-
-# repensar
-  - reprensar progressbar y selectedSize
-  - repensar acciones de subida de piso
-    - mostrar o no stats o q info
-    - desabilitar botones?
-    - confetti?
-    - carteles?
+  - agarrar libreria de iconos pixelart para las cosas especiales
+- carteles, cosas, boludeces, aniaciones, movimiento, vida al juego, ¿confetti como se usa ahora?
 
 # ideas
-- q aparezca el tiempo antes de empezar
-- pistas empieza en 0 (dsiabled??)
-- ??sacar botones de rendirse y pistas
 - jefes: jefe de secuencia
 - algunas habilidades permanentes o powerups por subir piso, maldiciones o bendiciones iniciales
   - darkness, siempre se adivinan primeras 2, items, etc  

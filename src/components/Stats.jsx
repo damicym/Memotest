@@ -1,10 +1,9 @@
 import { useState, useRef } from 'react'
 import { useEffect } from 'react'
-import { GAME_STATUS, GAME_MODES, TIMINGS, GAME_MODES_DESCRIPTIONS, GAME_RULES } from "./Juego"
-import { numberIcons } from '../libs/myFunctions';
+import { GAME_STATUS, GAME_MODES, TIMINGS } from "../libs/gameConfig"
 import StatsInfo from './StatsInfo';
 
-function Stats({ totalGroups, qGuessedPairs, reset, hint, giveUp, gameStatus, hintActive, wasHintActive, fichasPerGroup, gameMode, prevValuePairs, evalResetAnimationByBtn, rogueFloor, setRogueFloor, timer, remainingHints, setRemainingHints}){
+function Stats({ totalGroups, qGuessedPairs, reset, hint, giveUp, gameStatus, hintActive, wasHintActive, gameMode, rogueFloor, setRogueFloor, timer, remainingHints, setRemainingHints, realTimer, timerInfo }){
     const [animatedDots, setAnimatedDots] = useState("...")
     const animatedDotsInterval = useRef(null)
 
@@ -72,6 +71,8 @@ function Stats({ totalGroups, qGuessedPairs, reset, hint, giveUp, gameStatus, hi
                 timer={timer}
                 remainingHints={remainingHints}
                 setRemainingHints={setRemainingHints}
+                realTimer={realTimer}
+                timerInfo={timerInfo}
             />
         }
             

@@ -24,7 +24,8 @@ html.rogue-mode{
   --dark: #1A0D18;
   --light: #EEEBE9;
   --statsBgSecondary: #5F416A;
-  --muyMal: #E84A3D;
+  /* --muyMal: #E84A3D; */
+  --muyMal: #e6b01a;
 }
 
 html{

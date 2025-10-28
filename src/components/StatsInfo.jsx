@@ -1,36 +1,60 @@
 import { useState } from 'react'
 import { useEffect } from 'react'
-import { GAME_STATUS, GAME_MODES } from "./Juego"
-import { getFancyTimeBySecs } from '../libs/myFunctions'
+import { GAME_STATUS, GAME_MODES, TIMER_INFO_STATUS } from "../libs/gameConfig"
+import { getFancyTimeBySecs, getClockTimeBySecs } from '../libs/myFunctions'
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import { FiFlag as GiveUpIcon} from "react-icons/fi";
 import { GrPowerReset as ResetIcon } from "react-icons/gr";
 import Tooltip from 'react-bootstrap/Tooltip';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import HintBtn from './HintBtn';
+import TimerIcon from './TimerIcon';
+import floorIcon from '../assets/fc5.png';
 
-function StatsInfo({ waiting, totalGroups, qGuessedPairs, reset, hint, giveUp, gameStatus, hintActive, wasHintActive, gameMode, rogueFloor, setRogueFloor, timer, remainingHints, setRemainingHints}){
-    const [timeInGame, setTimeInGame] = useState(0)
+function StatsInfo({ waiting, totalGroups, qGuessedPairs, reset, hint, giveUp, gameStatus, hintActive, wasHintActive, gameMode, rogueFloor, setRogueFloor, timer, remainingHints, setRemainingHints, realTimer, timerInfo }){
+    const timeInGame = gameMode !== GAME_MODES.ROGUE ? getFancyTimeBySecs(timer) : getClockTimeBySecs(timer)
     const [progress, setProgress] = useState((qGuessedPairs / totalGroups) * 100)
     
-    useEffect(() => {
-        setTimeInGame(getFancyTimeBySecs(timer))
-    }, [timer])
-
     useEffect(() => {
         setProgress((qGuessedPairs / totalGroups) * 100)
     }, [totalGroups, qGuessedPairs])
 
     return(
         <section className='statsInfo'>
-            <p className="timer" style={{ width: '85px', opacity: gameStatus === GAME_STATUS.GIVEN_UP ? '0.4' : '1'}} >{timeInGame}</p>
+            <div className='timerContainer'>
+                <div className='timerExtras'>
+                    { timerInfo?.content &&
+                        <span 
+                            style={{
+                                color: timerInfo.status === TIMER_INFO_STATUS.POSITIVE 
+                                    ? 'var(--muyBien)' 
+                                    : timerInfo.status === TIMER_INFO_STATUS.NEGATIVE
+                                        ? 'var(--muyMal)' 
+                                        : timerInfo.status === TIMER_INFO_STATUS.NEUTRAL
+                                            && 'var(--light)',
+                                fontWeight: timerInfo.status !== TIMER_INFO_STATUS.NEUTRAL ? '500' : '400'
+                            }}
+                        >
+                            {timerInfo.content}
+                        </span>
+                    }
+                    <TimerIcon 
+                        // key={rogueFloor} <- solo cuando era con keyframes, ya no
+                        type={gameStatus === GAME_STATUS.STARTED ? 'steps' : 'stopped'} 
+                        seconds={realTimer} 
+                        className='timerIcon' 
+                        style={{ opacity: gameStatus === GAME_STATUS.GIVEN_UP ? '0.4' : '1'}}
+                    />
+                </div>
+                <p className="timer withHole" style={{ width: '85px', opacity: gameStatus === GAME_STATUS.GIVEN_UP ? '0.4' : '1'}}>{timeInGame}</p>
+            </div>
             { !waiting ?
-                <div className="customProgressBar" style={{ position: 'relative', width: '250px', opacity: gameStatus === GAME_STATUS.GIVEN_UP ? '0.4' : '1' }}>
+                <div className="customProgressBar statsCenteredElement" style={{ opacity: gameStatus === GAME_STATUS.GIVEN_UP ? '0.4' : '1' }}>
                     <ProgressBar
                         striped={gameStatus === GAME_STATUS.GIVEN_UP}
                         animated={gameStatus !== GAME_STATUS.GIVEN_UP}
                         now={Math.max(4, progress)} 
-                        className='progressBarComponent'
+                        className="progressBarComponent statsCenteredElement"
                         style={{ 
                             '--bs-progress-bar-bg': `hsl(${progress}, 55%, 55%)`,
                             '--bs-progress-font-size': '0.8rem',
@@ -41,19 +65,23 @@ function StatsInfo({ waiting, totalGroups, qGuessedPairs, reset, hint, giveUp, g
                     </div>
                 </div>
                 :
-                <div /* className='waiting' */>
+                <div /* className='waiting' */ className='statsCenteredElement'>
                     <p>Da vuelta una ficha para empezar</p>
                     {/* <p>{animatedDots}</p> */}
                 </div>
             }
             { gameStatus === GAME_STATUS.GIVEN_UP &&
-                <p className='givenUpText' >¡Juego terminado!</p>
+                <p className='givenUpText' >¡{gameMode !== GAME_MODES.ROGUE ? "Juego terminado" : "Perdiste"}!</p>
             }
             <div className='floorNControlsContainar'>
                 { gameMode === GAME_MODES.ROGUE &&
-                    <p className="timer" style={{ width: '85px' }} >{rogueFloor}</p>
+                    <div className="floorDisplay" style={{ width: '85px', opacity: gameStatus === GAME_STATUS.GIVEN_UP ? '0.4' : '1'}}>
+                        <img src={floorIcon} alt="floor icon"/>
+                        <p>{rogueFloor}</p>
+                    </div>
                 }
                 <section className='controlsContainer'>
+                <div className='divisionLine' style={{left: gameMode !== GAME_MODES.ROGUE ? '-12.5px' : '-15px'}}></div>
                     <HintBtn 
                         hasBadge={gameMode === GAME_MODES.ROGUE}
                         hint={hint} 

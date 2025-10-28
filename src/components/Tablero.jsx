@@ -1,5 +1,5 @@
 import Ficha from './Ficha'
-import { FICHA_STATUS, GAME_MODES, GAME_STATUS, TIMINGS } from './Juego'
+import { FICHA_STATUS, GAME_MODES, GAME_STATUS, TIMINGS } from '../libs/gameConfig'
 import { useEffect, useState, useRef } from 'react'
 import { toOneShapeNColor, fireIcon } from '../libs/confetti'
 
@@ -9,10 +9,8 @@ export const ERROR_TYPES = Object.freeze({
     ORDER: 1,
 })
 
-function Tablero({ fichas, setFichas, columns, isBoardLocked, setIsBoardLocked, sumarClick, shouldFichasAnimate, shapesNColors, setShapesNColors, gameStatusRef, fichasPerGroup, gameMode, abiertasRef }) {
+function Tablero({ fichas, setFichas, columns, isBoardLocked, setIsBoardLocked, sumarClick, shouldFichasAnimate, shapesNColors, setShapesNColors, gameStatusRef, fichasPerGroup, gameMode, abiertasRef, timeoutEsconderStatus, timeoutLockBoard }) {
     const [timeToShine, setTimeToShine] = useState(false)
-    const timeoutEsconderStatus = useRef(null)
-    const timeoutLockBoard = useRef(null)
 
     useEffect(() => {
         let timeout
@@ -54,15 +52,12 @@ function Tablero({ fichas, setFichas, columns, isBoardLocked, setIsBoardLocked, 
                 f.status = gameStatusRef.current === GAME_STATUS.GIVEN_UP ? FICHA_STATUS.ADIVINADA : FICHA_STATUS.ESCONDIDA
             )
             setFichas(next)
-        }, TIMINGS.BEFORE_HIDING_FICHA) /* + (gameMode === GAME_MODES.SEQUENCE ? TIMINGS.EXTRA_TIME : 0) */
+        }, TIMINGS.BEFORE_HIDING_FICHA)
         timeoutLockBoard.current = setTimeout(() => {
             setIsBoardLocked(false)
-        }, TIMINGS.BEFORE_HIDING_FICHA) /* + (TIMINGS.FICHA_FLIP / 3) */ /* + (gameMode === GAME_MODES.SEQUENCE ? TIMINGS.EXTRA_TIME : 0) */
+        }, TIMINGS.BEFORE_HIDING_FICHA)
     }
 
-    // para secuancia:
-    // si tocas una en el orden incorrecto, esconderDsps()
-    // si no, no, hasta que llegues a fichasPerGroup
     const handleClickFicha = (e, key) => {
         if(isBoardLocked) return
         const fichaActual = fichas.find(f => f.id === key)

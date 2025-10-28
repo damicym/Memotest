@@ -1,4 +1,4 @@
-import { GAME_STATUS, GAME_RULES } from "./Juego"
+import { GAME_STATUS } from "../libs/gameConfig"
 import { AiOutlineBulb as HintIcon } from "react-icons/ai";
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';

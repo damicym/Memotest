@@ -1,21 +1,11 @@
 import { getRandomIcon } from "./icons"
-import { FICHA_STATUS, GAME_MODES, GAME_RULES, TABLERO_TYPES } from "../components/Juego"
+import { FICHA_STATUS, GAME_MODES, GAME_RULES, TABLERO_TYPES } from "./gameConfig"
 import { TbCircleNumber1Filled as OneIcon, TbCircleNumber2Filled as TwoIcon, TbCircleNumber3Filled as ThreeIcon, TbCircleNumber4Filled as FourIcon, TbCircleNumber5Filled as FiveIcon, TbCircleNumber6Filled as SixIcon } from "react-icons/tb";
 export const numberIcons = [OneIcon, TwoIcon, ThreeIcon, FourIcon, FiveIcon, SixIcon]
 
 export function splitCamelCase(str) {
     return str.replace(/([A-Z])/g, ' $1').trim()
 }
-
-// export function deleteExtraWords(str, qWords, maxChars) {
-//     const words = str.split(" ")
-//     let auxStr = words.slice(0, qWords).join(" ")
-//     if(auxStr.length > maxChars) {
-//         auxStr = words[0]
-//         auxStr = auxStr.slice(0, maxChars) + '\n' + auxStr.slice(maxChars)
-//     }
-//     return auxStr
-// }
 
 export function deleteExtraWords(str, qWords, charsPerWord) {
     const words = str.split(" ")
@@ -152,27 +142,41 @@ export function isPrimeOrBanned(n, banned = []) {
     for (let i = 2; i <= Math.sqrt(n); i++) {
         if(n % i === 0) return false
     }
-    return true;
+    return true
 }
 
 export function getClosestNotPrimeOrBanned(n, direction = 'up', banned = []) {
     do {
         if(direction === 'up') n++
-        else n--;
+        else n--
     } while (isPrimeOrBanned(n, banned))
-    return n;
+    return n
 }
 
 export function getFancyTimeBySecs(initSecs) {
     const hours = Math.floor(initSecs / 3600)
     const minutes = Math.floor((initSecs % 3600) / 60)
-    const seconds = initSecs % 60
+    const seconds = Math.floor(initSecs % 60)
     let facyTime
     
     if(hours) facyTime = `${hours}h+`
-    else if(minutes) facyTime = `${minutes}m ${seconds}s`
+    else if(minutes && seconds) facyTime = `${minutes}m ${seconds}s`
+    else if(minutes) facyTime = `${minutes}m`
     else facyTime = `${seconds}s`
     return facyTime
+}
+
+export function getClockTimeBySecs(initSecs){
+    const hours = Math.floor(initSecs / 3600)
+    const minutes = Math.floor((initSecs % 3600) / 60)
+    const seconds = Math.floor(initSecs % 60)
+
+    const fancyHours = hours.toString().padStart(2, '0')
+    const fancyMins = minutes.toString().padStart(2, '0')
+    const fancySecs = seconds.toString().padStart(2, '0')
+
+    if(hours) return `${fancyHours}:${fancyMins}:${fancySecs}`
+    else return `${fancyMins}:${fancySecs}`
 }
 
 export function randomInRange(min, max) {
@@ -234,4 +238,19 @@ export function getGroupsNFichasPerG(gameMode, sizeIndex){
             fichasPerGroup: TABLERO_TYPES[gameMode][sizeIndex].fichasPerGroup
         }
     }
+}
+
+export function getRotationDegrees(secs, currentDegs, lastStartDeg){
+    const numSecs = Number(secs) || 0
+    if(secs){
+      const step = Math.floor(numSecs / 2.5) /* % 12 */
+      const nextDeg = lastStartDeg + step * 30
+      return nextDeg
+    } else {
+      return getLastStartDeg(currentDegs)
+    }
+}
+
+export function getLastStartDeg(currentDegs){
+    return Math.round(currentDegs / 360) * 360
 }

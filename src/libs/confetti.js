@@ -1,7 +1,7 @@
 import confetti from 'canvas-confetti'
 import { randomInRange, hslaToHex } from './myFunctions'
 import { getPathFromIcon } from './icons'
-import { TIMINGS } from '../components/Juego'
+import { TIMINGS } from './gameConfig'
 
 // para usar colores diferenetes para formas diferenetes hacer 2 confetti() en el mismo fire
 // usar un canvas propio si queres limitar donde aparece el confetti
