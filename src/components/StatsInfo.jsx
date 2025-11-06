@@ -14,7 +14,6 @@ import floorIcon from '../assets/floor_icons/Mesa.webp';
 function StatsInfo({ waiting, totalGroups, qGuessedPairs, reset, hint, giveUp, gameStatus, hintActive, wasHintActive, gameMode, rogueFloor, setRogueFloor, timer, remainingHints, setRemainingHints, realTimer, timerInfo }){
     const timeInGame = gameMode !== GAME_MODES.ROGUE ? getFancyTimeBySecs(timer) : getClockTimeBySecs(timer)
     const [progress, setProgress] = useState((qGuessedPairs / totalGroups) * 100)
-    
     useEffect(() => {
         setProgress((qGuessedPairs / totalGroups) * 100)
     }, [totalGroups, qGuessedPairs])
@@ -88,7 +87,7 @@ function StatsInfo({ waiting, totalGroups, qGuessedPairs, reset, hint, giveUp, g
                                 style={{ opacity: gameStatus === GAME_STATUS.GIVEN_UP ? '0.4' : '1'}}
                             />
                         </div>
-                        <p className="timer withHole" style={{ width: '85px', opacity: gameStatus === GAME_STATUS.GIVEN_UP ? '0.4' : '1'}}>{rogueFloor}</p>
+                        <p className="timer withHole" style={{ width: '110px', opacity: gameStatus === GAME_STATUS.GIVEN_UP ? '0.4' : '1'}}>Mesa {rogueFloor}</p>
                     </div>
                 }
                 <section className='controlsContainer'>
