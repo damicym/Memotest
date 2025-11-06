@@ -9,7 +9,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import HintBtn from './HintBtn';
 import TimerIcon from './TimerIcon';
-import floorIcon from '../assets/fc5.png';
+import floorIcon from '../assets/floor_icons/Mesa.webp';
 
 function StatsInfo({ waiting, totalGroups, qGuessedPairs, reset, hint, giveUp, gameStatus, hintActive, wasHintActive, gameMode, rogueFloor, setRogueFloor, timer, remainingHints, setRemainingHints, realTimer, timerInfo }){
     const timeInGame = gameMode !== GAME_MODES.ROGUE ? getFancyTimeBySecs(timer) : getClockTimeBySecs(timer)
@@ -75,9 +75,20 @@ function StatsInfo({ waiting, totalGroups, qGuessedPairs, reset, hint, giveUp, g
             }
             <div className='floorNControlsContainar'>
                 { gameMode === GAME_MODES.ROGUE &&
-                    <div className="floorDisplay" style={{ width: '85px', opacity: gameStatus === GAME_STATUS.GIVEN_UP ? '0.4' : '1'}}>
-                        <img src={floorIcon} alt="floor icon"/>
-                        <p>{rogueFloor}</p>
+                    // <div className="floorDisplay" style={{ width: '85px', opacity: gameStatus === GAME_STATUS.GIVEN_UP ? '0.4' : '1'}}>
+                    //     <img src={floorIcon} alt="floor icon"/>
+                    //     <p>{rogueFloor}</p>
+                    // </div>
+                    <div className='timerContainer'>
+                        <div className='timerExtras'>
+                            <img 
+                                src={floorIcon} 
+                                alt="floor icon"
+                                className='timerIcon' 
+                                style={{ opacity: gameStatus === GAME_STATUS.GIVEN_UP ? '0.4' : '1'}}
+                            />
+                        </div>
+                        <p className="timer withHole" style={{ width: '85px', opacity: gameStatus === GAME_STATUS.GIVEN_UP ? '0.4' : '1'}}>{rogueFloor}</p>
                     </div>
                 }
                 <section className='controlsContainer'>

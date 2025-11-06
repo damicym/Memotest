@@ -1,3 +1,11 @@
+
+// usar pallete cambio style desde componentes, o hacer otra clase para el html
+export const ROGUE_FLOOR_TYPES = Object.freeze([
+  // { name: , icon: , bgImg:  /*, pallete: {   } */ },
+  // { name: , icon: , bgImg:  /*, pallete: {   } */ },
+  // { name: , icon: , bgImg:  /*, pallete: {   } */ },
+])
+
 export const FICHA_STATUS = Object.freeze({
   ORDER_ERROR: -2,
   ERROR: -1,

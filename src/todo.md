@@ -1,10 +1,8 @@
 # styles
-  - poner el floorDisplat mas grande? seguir probando, plantearse si va bien
-  - hacer lo mismo que con el icono del timer?
-  - averiguar como se muestra piso en otros roguelikes
-    - en ves de nº de piso, agarrar icono tipo emoji representativo (pixelart?), nombre, fondo, icono y color de ficha-back, y nº
+  - revisar como quedan los tamaños y eso
 
 # roguelike
+- hacer q cambie el piso y sus cosas
 - fichas con poderes (+tiempo, revelar una ficha, fichas trampa q escondan fichas) (tendrian q ser pares y quedarse disabled apenas se dan vuelta) 
   - agarrar libreria de iconos pixelart para las cosas especiales
 - carteles, cosas, boludeces, aniaciones, movimiento, vida al juego, ¿confetti como se usa ahora?
