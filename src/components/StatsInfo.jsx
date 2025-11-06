@@ -87,7 +87,7 @@ function StatsInfo({ waiting, totalGroups, qGuessedPairs, reset, hint, giveUp, g
                                 style={{ opacity: gameStatus === GAME_STATUS.GIVEN_UP ? '0.4' : '1'}}
                             />
                         </div>
-                        <p className="timer withHole" style={{ width: '85px', opacity: gameStatus === GAME_STATUS.GIVEN_UP ? '0.4' : '1'}}>{rogueFloor}</p>
+                        <p className="timer withHole" style={{ width: '110px', opacity: gameStatus === GAME_STATUS.GIVEN_UP ? '0.4' : '1'}}>Mesa {rogueFloor}</p>
                     </div>
                 }
                 <section className='controlsContainer'>
