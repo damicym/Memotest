@@ -1,7 +1,7 @@
 import confetti from 'canvas-confetti'
 import { randomInRange, hslaToHex } from './myFunctions'
 import { getPathFromIcon } from './icons'
-import { TIMINGS } from '../components/Juego'
+import { TIMINGS } from './gameConfig'
 
 // para usar colores diferenetes para formas diferenetes hacer 2 confetti() en el mismo fire
 // usar un canvas propio si queres limitar donde aparece el confetti
@@ -159,7 +159,6 @@ export function fireIcon(shapeNColor, posY, posX, totalY, totalX){
 // #endregion oneIcon
 
 // #region win
-const winFiresQ = 3
 const winFireParams = {
   scalar: 1.8,
   spread: 160,
@@ -167,7 +166,7 @@ const winFireParams = {
   gravity: 0.7,
 }
 
-export async function fireWin(){
+export async function fireWin(winFiresQ = 3){
   let countWinFiresQ = 0
   confetti({
     ...winFireParams,
@@ -184,6 +183,7 @@ export async function fireWin(){
     origin: { x: 1, y: 0 },
   })
   countWinFiresQ++
+  if(countWinFiresQ >= winFiresQ) return
   const winFireInterval = setInterval(() => {
     confetti({
       ...winFireParams,

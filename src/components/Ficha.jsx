@@ -1,6 +1,6 @@
 import { PiSealQuestionBold as HiddenIcon} from "react-icons/pi"
-import { FICHA_STATUS } from "./Juego"
 import { useEffect, useState } from 'react'
+import { FICHA_STATUS } from '../libs/gameConfig'
 
 function Ficha({ ficha, handleClick, lockState, shouldFichasAnimate, timeToShine }){
     const [showShadow, setShowShadow] = useState(true)

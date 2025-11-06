@@ -123,6 +123,7 @@
   font-size: 1.05rem;
   color: var(--accent);
   font-weight: 550;
+  user-select: none;
 }
 
 input[type="range"] {

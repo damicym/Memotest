@@ -1,15 +1,13 @@
+# styles
+  - revisar como quedan los tamaños y eso
+
 # roguelike
-- subida de piso (se va agrandando cada vez q completas)
-  - cuando ganas, se hace un semi-reset
-  - 
-- teimpo en contra
-- progressbar, selectedSize
-- fichas con poderes (+tiempo, revelar una ficha, fichas trampa q escondan fichas) (tendrian q ser pares y quedarse disabled apenas se dan vuelta)  
+- hacer q cambie el piso y sus cosas
+- fichas con poderes (+tiempo, revelar una ficha, fichas trampa q escondan fichas) (tendrian q ser pares y quedarse disabled apenas se dan vuelta) 
+  - agarrar libreria de iconos pixelart para las cosas especiales
+- carteles, cosas, boludeces, aniaciones, movimiento, vida al juego, ¿confetti como se usa ahora?
 
 # ideas
-- q aparezca el tiempo antes de empezar
-- pistas empieza en 0 (dsiabled??)
-- ??sacar botones de rendirse y pistas
 - jefes: jefe de secuencia
 - algunas habilidades permanentes o powerups por subir piso, maldiciones o bendiciones iniciales
   - darkness, siempre se adivinan primeras 2, items, etc  
@@ -24,6 +22,7 @@
 # extras
 - todo esto tendria carteles y animaciones que le den dinamismo
 - ?slider ("personalizado" en vez de icono, sacarlo, o ponerlo dentro de config (¿solo input de ancho?))
+- personalización para secuencia y muestra de a cuántos fichasPerGroup va a jugar
 - ¿pixelart?: fichas solo con iconos pixelart, las especiales tienen nombre
 - responsive  
 

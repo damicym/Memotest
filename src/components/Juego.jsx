@@ -4,81 +4,19 @@ import Opciones from './Opciones'
 import Stats from './Stats'
 import { defineColumns, inicializarFichas, getGroupsNFichasPerG } from '../libs/myFunctions'
 import { fireWin } from '../libs/confetti'
-
-export const FICHA_STATUS = Object.freeze({
-  ORDER_ERROR: -2,
-  ERROR: -1,
-  ESCONDIDA: 0,
-  MOSTRADA: 1,
-  ADIVINADA: 2
-})
-
-export const GAME_STATUS = Object.freeze({
-  NOT_STARTED: 0,
-  STARTED: 1,
-  WON: 2,
-  GIVEN_UP: 3
-})
-
-export const TIMINGS = Object.freeze({
-  BEFORE_HIDING_FICHA: 0.95 * 1000,
-  EXTRA_TIME: 0.3 * 1000,
-  FICHA_FLIP: 0.5 * 1000,
-  HINT_COOLDOWN: 2 * 1000,
-  HINT_DURATION: 1.6 * 1000,
-  BETWEEN_ANIMATED_DOTS: 0.6 * 1000,
-  SHINE_DURATION: 4 * 1000,
-  BETWEEN_FICHA_SHINE: 0.8 * 1000,
-  SHINE_CYCLE: 4.6 * 1000,  // suma de los 2 anteriores
-  BETWEEN_WIN_CONFETTI: 0.5 * 1000,
-  GAME_MODE_CHANGE: 0.2 * 1000
-})
-
-export const GAME_MODES = Object.freeze({
-  CLASSIC: 0,
-  ROGUE: 1,
-  SEQUENCE: 2,
-})
-
-export const GAME_MODES_DESCRIPTIONS = Object.freeze([
-  // classic
-  "Memotest sin nada nuevo: Encontrá los pares de fichas que coincidan en ícono y color. Podés usar pistas.",
-  // rogue
-  "El tiempo va en tu contra! Completá tantos tableros como puedas.\nCada vez será más difícil, así que aprobechá los beneficios que te ofrezca el tablero.",
-  // sequence
-  "Encontrá secuencias de fichas: Ya no solo importa que coincidan, sino también el orden en el que las das vuelta. Podés usar pistas.",
-  // extras | error
-  "Parece que se ha producido un error al determinar el modo de juego :(",
-  // extras | beta
-  "Esto es una beta. Próximamente habrá nuevos modos, desafíos diarios y leaderbaord de jugadores",
-])
-
-export const GAME_RULES = Object.freeze({
-  DEFAULT_TABLERO_SIZE: 1,
-  MIN_TOTAL_PAIRS: 4,
-  MAX_TOTAL_PAIRS: 50,
-  MAX_HINTS: 3,
-  EXCLUDED_Q_PAIRS: [34, 38, 46],
-  CLASSIC_GROUPS: 2,
-})
-
-export const TABLERO_TYPES = Object.freeze([
-    [ // classic
-      { name: "Chico", groups: 6, fichasPerGroup: 2 }, 
-      { name: "Mediano", groups: 14, fichasPerGroup: 2 }, 
-      { name: "Grande", groups: 24, fichasPerGroup: 2 },
-    ],
-    [ // rogue
-
-    ],
-    [ // sequence
-    { name: "Chico", groups: 6, fichasPerGroup: 2 }, 
-    { name: "Mediano", groups: 10, fichasPerGroup: 2 }, 
-    { name: "Grande", groups: 16, fichasPerGroup: 2 }, 
-    ]
-])
+import { 
+  FICHA_STATUS, 
+  GAME_STATUS, 
+  TIMINGS, 
+  GAME_MODES, 
+  GAME_RULES, 
+  TABLERO_TYPES, 
+  TIMER_INFO_STATUS
+} from '../libs/gameConfig'
 
 function Juego() {
+// #region states
+  const [isFirstRender, setIsFirstRender] = useState(true)
   const [gameMode, setGameMode] = useState(() => {
     const saved = localStorage.getItem('gameMode')
     return saved !== null ? Number(saved) : GAME_MODES.CLASSIC
@@ -87,31 +25,46 @@ function Juego() {
     const saved = localStorage.getItem('selectedSize')
     return saved !== null ? Number(saved) : GAME_RULES.DEFAULT_TABLERO_SIZE
   })
+
   const { groups: newGroups, fichasPerGroup: newFichasPerGroup } = getGroupsNFichasPerG(gameMode, selectedSize)
-  const [totalGroups, setTotalGroups] = useState(() => newGroups)
+  const [totalGroups, setTotalGroups] = useState(newGroups)
   const prevValuePairs = useRef(newGroups)
+  const [fichasPerGroup, setFichasPerGroup] = useState(newFichasPerGroup)
+  const prevFichasPerGroup = useRef(newFichasPerGroup)
+
   const [fichas, setFichas] = useState([])
   const [columns, setColumns] = useState(0)
   const [isBoardLocked, setIsBoardLocked] = useState(false)
   const [clicks, setClicks] = useState(0)
   const [errors, setErrors] = useState(0)
-  const [gameStatus, setGameStatus] = useState(GAME_STATUS.NOT_STARTED)
-  const gameStatusRef = useRef(gameStatus)
   const [qGuessedPairs, setQGuessedPairs] = useState(0)
+
   const [hintActive, setHintActive] = useState(false)
   const wasHintActive = useRef(false)
-  const [shouldFichasAnimate, setShouldFichasAnimate] = useState(true)
-  const [shapesNColors, setShapesNColors] = useState([])
   const [usedHints, setUsedHints] = useState(0)
-  const [isFirstRender, setIsFirstRender] = useState(true)
-  const timeoutFlipAllFichas = useRef(null)
-  const [fichasPerGroup, setFichasPerGroup] = useState(newFichasPerGroup)
-  const resetTriggeredByModeChange = useRef(false)
-  const prevFichasPerGroup = useRef(newFichasPerGroup)
-  const abiertasRef = useRef([])
+  const [shouldFichasAnimate, setShouldFichasAnimate] = useState(true)
 
+  const [shapesNColors, setShapesNColors] = useState([])
+  const timeoutFlipAllFichas = useRef(null)
+  const resetTriggeredByModeChange = useRef(false)
+  const resetTriggeredByFloor = useRef(false)
+  const abiertasRef = useRef([])
+  const [gameStatus, setGameStatus] = useState(GAME_STATUS.NOT_STARTED)
+  const gameStatusRef = useRef(gameStatus)
+  const [rogueFloor, setRogueFloor] = useState(1)
+  const [timer, setTimer] = useState(gameMode === GAME_MODES.ROGUE ? TIMINGS.ROGUE_INITIAL_SECS : 0)
+  const [remainingHints, setRemainingHints] = useState(GAME_RULES.ROGUE_INITIAL_HINTS)
+  const timeoutAdvanceFloor = useRef(null)
+  const [realTimer, setRealTimer] = useState(0)
+  const timeoutEsconderStatus = useRef(null)
+  const timeoutLockBoard = useRef(null)
+  const secondsInterval = useRef(null)
+  const [timerInfo, setTimerInfo] = useState({ content: null, status: TIMER_INFO_STATUS.POSITIVE })
+  // #endregion states
+
+// #region useEffects
   useEffect(() => {
-    reset(false)
+    reset({ wAnimation: false })
     if(selectedSize >= TABLERO_TYPES[gameMode].length) {
       localStorage.setItem('selectedSize', GAME_RULES.DEFAULT_TABLERO_SIZE)
     } else localStorage.setItem('selectedSize', selectedSize)
@@ -119,6 +72,9 @@ function Juego() {
 
   useEffect(() => {
     localStorage.setItem('gameMode', gameMode)
+    clearTimeout(timeoutEsconderStatus.current)
+    clearTimeout(timeoutLockBoard.current)
+    // setTimer(gameMode === GAME_MODES.ROGUE ? TIMINGS.ROGUE_INITIAL_SECS : 0)
     if(gameMode === GAME_MODES.CLASSIC){
       document.documentElement.classList.add('classic-mode')
       document.documentElement.classList.remove('sequence-mode')
@@ -131,27 +87,37 @@ function Juego() {
       document.documentElement.classList.add('rogue-mode')
       document.documentElement.classList.remove('classic-mode')
       document.documentElement.classList.remove('sequence-mode')
+
+      resetTriggeredByModeChange.current = true
+      if(totalGroups !== GAME_RULES.ROGUE_BASE_GROUPS || fichasPerGroup !== GAME_RULES.CLASSIC_FPG){
+        setTotalGroups(GAME_RULES.ROGUE_BASE_GROUPS)
+        prevValuePairs.current = GAME_RULES.ROGUE_BASE_GROUPS
+        setFichasPerGroup(GAME_RULES.CLASSIC_FPG)
+        prevFichasPerGroup.current = GAME_RULES.CLASSIC_FPG
+      } else {
+        resetTriggeredByModeChange.current = false
+        reset({ wAnimation: evalResetAnimationFromBtn(prevValuePairs, fichasPerGroup, GAME_RULES.ROGUE_BASE_GROUPS, GAME_RULES.CLASSIC_FPG) })
+      }
     }
     if(isFirstRender) {
       setIsFirstRender(false)
       return
     }
-    let nextSize = selectedSize
-    if(selectedSize >= TABLERO_TYPES[gameMode].length) {
-      nextSize = GAME_RULES.DEFAULT_TABLERO_SIZE
-      setSelectedSize(GAME_RULES.DEFAULT_TABLERO_SIZE)
-    }
-
-    const { groups: newTotal, fichasPerGroup: newFichasPerGroup} = getGroupsNFichasPerG(gameMode, nextSize)
-    prevValuePairs.current = newTotal
-    resetTriggeredByModeChange.current = true
-    setTotalGroups(newTotal)
-    setFichasPerGroup(newFichasPerGroup)
-
-    if(newTotal * newFichasPerGroup === totalGroups * prevFichasPerGroup.current) reset()
+    if(gameMode !== GAME_MODES.ROGUE){
+      let nextSize = selectedSize
+      if(selectedSize >= TABLERO_TYPES[gameMode].length) {
+        nextSize = GAME_RULES.DEFAULT_TABLERO_SIZE
+        setSelectedSize(GAME_RULES.DEFAULT_TABLERO_SIZE)
+      }
+      const { groups: newTotal, fichasPerGroup: newFichasPerGroup} = getGroupsNFichasPerG(gameMode, nextSize)
+      prevValuePairs.current = newTotal
+      resetTriggeredByModeChange.current = true
+      setTotalGroups(newTotal)
+      setFichasPerGroup(newFichasPerGroup)
+      if(newTotal * newFichasPerGroup === totalGroups * prevFichasPerGroup.current) reset()
       else if(newTotal === totalGroups ) reset({ wAnimation: false })
-
-    prevFichasPerGroup.current = newFichasPerGroup
+      prevFichasPerGroup.current = newFichasPerGroup
+    }
   }, [gameMode])
 
   useEffect(() => {
@@ -160,7 +126,13 @@ function Juego() {
       reset({ wAnimation: false })
       return
     }
-    reset({ wAnimation: false })
+    else if(resetTriggeredByFloor.current){
+      resetTriggeredByFloor.current = false
+      if(rogueFloor === 1) reset({ wAnimation: false, onlyFloor: false })
+      else reset({ wAnimation: false, onlyFloor: true })
+      return
+    }
+    if(gameMode !== GAME_MODES.ROGUE) reset({ wAnimation: false })
   }, [totalGroups])
 
   useEffect(() => {
@@ -177,23 +149,47 @@ function Juego() {
   useEffect(() => {
     gameStatusRef.current = gameStatus
     wasHintActive.current = false
-    if(gameStatus === GAME_STATUS.STARTED){
-      setShouldFichasAnimate(true)
+    switch (gameStatus) {
+      case GAME_STATUS.STARTED:
+        setShouldFichasAnimate(true)
+        // setTimer(gameMode === GAME_MODES.ROGUE ? TIMINGS.ROGUE_INITIAL_SECS : 0)
+        secondsInterval.current = setInterval(() => {
+          setTimer(prev => gameMode === GAME_MODES.ROGUE ? Math.max(0, prev - 1) : Math.max(0, prev + 1))
+          setRealTimer(prev => prev + 1)
+          // realTimer.current += 1
+        }, 1000)
+        
+        break
+      case GAME_STATUS.WON:
+        if(gameMode === GAME_MODES.ROGUE) {
+          advanceRogueFloor()
+        } else {
+          fireWin()
+        }
+      break
+      case GAME_STATUS.GIVEN_UP:
+        setIsBoardLocked(true)
+        let next = [...fichas]
+        next.forEach(f => {
+          f.status = FICHA_STATUS.ADIVINADA
+          f.beingHinted = false
+        })
+        setFichas(next)
+        setHintActive(false)
+      break
     }
-    else if(gameStatus === GAME_STATUS.GIVEN_UP){
-      setIsBoardLocked(true)
-      let next = [...fichas]
-      next.forEach(f => {
-        f.status = FICHA_STATUS.ADIVINADA
-        f.beingHinted = false
-      })
-      setFichas(next)
-      setHintActive(false)
-    }
-    else if(gameStatus === GAME_STATUS.WON){
-      fireWin()
-    }
+    return () => clearInterval(secondsInterval.current)
   }, [gameStatus])
+
+  useEffect(() => {
+    if(gameMode === GAME_MODES.ROGUE){
+      // esto puede q si no cambian los nextGroups no funcione pq no genere el reset
+      const nextGroups = calculateNextFloorSize(rogueFloor)
+      resetTriggeredByFloor.current = true
+      prevValuePairs.current = nextGroups
+      setTotalGroups(nextGroups)
+    }
+  }, [rogueFloor])
 
   useEffect(() => {
     if(clicks % fichasPerGroup !== 0) return
@@ -204,73 +200,13 @@ function Juego() {
     setErrors(Math.max(0, attempts - qGuessedPairs))
   }, [clicks, fichas])
 
-  const sumarClick = () => {
-    setClicks(prev => {
-      if(prev === 0 && gameStatus === GAME_STATUS.NOT_STARTED) setGameStatus(GAME_STATUS.STARTED)
-      return prev + 1
-    })
-  }
+  useEffect(() => {
+    if(gameMode !== GAME_MODES.ROGUE) return
+    if(gameStatus !== GAME_STATUS.STARTED) return
+    if(!realTimer) return
+    if(timer <= 0) setGameStatus(GAME_STATUS.GIVEN_UP)
+  }, [timer])
 
-  // para opciones:
-  const reset = ({ wAnimation } = {wAnimation: true} ) => {
-    clearTimeout(timeoutFlipAllFichas.current)
-    setIsBoardLocked(true)
-    abiertasRef.current = []
-    let nextFichasPerGroup
-    if(selectedSize >= TABLERO_TYPES[gameMode].length) {
-      nextFichasPerGroup = GAME_RULES.CLASSIC_GROUPS
-    }
-    else nextFichasPerGroup = getGroupsNFichasPerG(gameMode, selectedSize).fichasPerGroup
-    
-    let next = [...fichas]
-    next.forEach(f => f.status = FICHA_STATUS.ESCONDIDA)
-    setFichas(next)
-    
-    setShapesNColors(prev => prev.length > 0 ? [] : prev)
-    setUsedHints(0)
-    setErrors(0)
-    setClicks(0)
-    setGameStatus(GAME_STATUS.NOT_STARTED)
-    setColumns(defineColumns(totalGroups, nextFichasPerGroup))
-    setQGuessedPairs(0)
-    setHintActive(false)
-    wasHintActive.current = false
-
-    const fichasInit = () => {
-      setFichas(inicializarFichas(totalGroups, nextFichasPerGroup, gameMode, /* false */))
-      setIsBoardLocked(false)
-    }
-
-    if(!wAnimation) {
-      setShouldFichasAnimate(false)
-      fichasInit()
-    } else {
-      setShouldFichasAnimate(true)
-      timeoutFlipAllFichas.current = setTimeout(fichasInit, TIMINGS.FICHA_FLIP)
-    }
-  }
-  // que cuando se resetee por cambio de totalParis
-  // no se animen las fichas
-  // sí se deberian animar cuando:
-  // la primera vez que se toca, durante el juego, cuando se resetea desde el btn
-
-  const hint = () => {
-    if(!fichas || fichas.length === 0) return
-    const candidatas = fichas.filter(ficha => ficha.status !== FICHA_STATUS.ADIVINADA)
-    if(candidatas.length === 0) return
-    // if(usedHints >= GAME_RULES.MAX_HINTS) return
-
-    setUsedHints(prev => prev + 1)
-    setHintActive(true)
-
-    const elegida = candidatas[Math.floor(Math.random() * candidatas.length)]
-    const groupIdElegido = elegida.groupId
-    
-    let next = [...fichas]
-    const elegidas = next.filter(f => f.groupId === groupIdElegido)
-    elegidas.forEach(f => f.beingHinted = true)
-    setFichas(next)
-  }
 
   useEffect(() => {
     if(!hintActive) return
@@ -291,9 +227,112 @@ function Juego() {
       clearTimeout(updateHintActiveTimer)
     }
   }, [hintActive])
+// #endregion useEffects
+
+  const reset = ({ wAnimation, onlyFloor } = { wAnimation: true, onlyFloor: false }) => {
+    if(onlyFloor) wAnimation = false
+    clearTimeout(timeoutAdvanceFloor.current)
+    clearTimeout(timeoutFlipAllFichas.current)
+    clearTimeout(timeoutEsconderStatus.current)
+    clearTimeout(timeoutLockBoard.current)
+    clearInterval(secondsInterval.current)
+    setIsBoardLocked(true)
+    abiertasRef.current = []
+
+    let nextFichasPerGroup = fichasPerGroup
+    if(!onlyFloor){
+      setRogueFloor(1)
+      setRealTimer(0)
+      setTimer(gameMode === GAME_MODES.ROGUE ? TIMINGS.ROGUE_INITIAL_SECS : 0)
+      setRemainingHints(GAME_RULES.ROGUE_INITIAL_HINTS)
+      setUsedHints(0)
+      setErrors(0)
+      setGameStatus(GAME_STATUS.NOT_STARTED)
+      wasHintActive.current = false
+      if(selectedSize >= TABLERO_TYPES[gameMode].length) {
+        nextFichasPerGroup = GAME_RULES.CLASSIC_FPG
+      } else nextFichasPerGroup = getGroupsNFichasPerG(gameMode, selectedSize).fichasPerGroup
+    } else {
+      setGameStatus(GAME_STATUS.STARTED)
+      setTimer(prev => prev + GAME_RULES.ROGUE_TIME_INCREMENT)
+      setTimerInfo({ content: `+${GAME_RULES.ROGUE_TIME_INCREMENT}`, status: TIMER_INFO_STATUS.POSITIVE })
+      setTimeout(() => {
+        setTimerInfo({ ...timerInfo, content: null })
+      }, TIMINGS.TIMER_INFO_ANIMATION)
+    }
+    
+    if(fichas && fichas.length){
+      let next = [...fichas]
+      next.forEach(f => f.status = FICHA_STATUS.ESCONDIDA)
+      setFichas(next)
+    }
+    setShapesNColors(prev => prev.length > 0 ? [] : prev)
+    setClicks(0)
+    setColumns(defineColumns(totalGroups, nextFichasPerGroup))
+    setQGuessedPairs(0)
+    setHintActive(false)
+
+    const fichasInit = () => {
+      setFichas(inicializarFichas(totalGroups, nextFichasPerGroup, gameMode, /* false */))
+      setIsBoardLocked(false)
+    }
+
+    if(!wAnimation) {
+      setShouldFichasAnimate(false)
+      fichasInit()
+    } else {
+      setShouldFichasAnimate(true)
+      timeoutFlipAllFichas.current = setTimeout(fichasInit, TIMINGS.FICHA_FLIP)
+    }
+  }
+
+  const hint = () => {
+    if(!fichas || fichas.length === 0) return
+    const candidatas = fichas.filter(ficha => ficha.status !== FICHA_STATUS.ADIVINADA)
+    if(candidatas.length === 0) return
+    if(remainingHints <= 0) return
+
+    if(gameMode === GAME_MODES.ROGUE) setRemainingHints(prev => prev -1)
+    setUsedHints(prev => prev + 1)
+    setHintActive(true)
+
+    const elegida = candidatas[Math.floor(Math.random() * candidatas.length)]
+    const groupIdElegido = elegida.groupId
+    
+    let next = [...fichas]
+    const elegidas = next.filter(f => f.groupId === groupIdElegido)
+    elegidas.forEach(f => f.beingHinted = true)
+    setFichas(next)
+  }
 
   const giveUp = () => {
     setGameStatus(GAME_STATUS.GIVEN_UP)
+  }
+
+  const advanceRogueFloor = () => {
+    clearTimeout(timeoutAdvanceFloor.current)
+    fireWin(1)
+    timeoutAdvanceFloor.current = setTimeout(() => {
+      setRogueFloor(prev => prev + 1)
+    }, TIMINGS.FICHA_FLIP)
+  }
+
+  const evalResetAnimationFromBtn = (prevGroups, prevFichasPerG, nextGroups, nextFichasPerG) => {
+    if(gameMode !== GAME_MODES.ROGUE) return true
+    let willAnimate = false
+    if(prevGroups * prevFichasPerG === nextGroups * nextFichasPerG) willAnimate = true
+    return willAnimate
+  }
+
+  const calculateNextFloorSize = (floor) => {
+    return Math.min(GAME_RULES.ROGUE_BASE_GROUPS + (floor - 1) * GAME_RULES.ROGUE_GROUPS_INCREMENT, GAME_RULES.MAX_TOTAL_PAIRS)
+  }
+
+  const sumarClick = () => {
+    setClicks(prev => {
+      if(prev === 0 && gameStatus === GAME_STATUS.NOT_STARTED) setGameStatus(GAME_STATUS.STARTED)
+      return prev + 1
+    })
   }
 
   return (
@@ -308,6 +347,10 @@ function Juego() {
         setSelectedSize={setSelectedSize}
         setFichasPerGroup={setFichasPerGroup}
         prevFichasPerGroup={prevFichasPerGroup}
+        setTimer={setTimer}
+        // realTimer={realTimer}
+        setRealTimer={setRealTimer}
+        secondsInterval={secondsInterval}
       />
       <Stats
         totalGroups={totalGroups}
@@ -318,9 +361,14 @@ function Juego() {
         gameStatus={gameStatus}
         hintActive={hintActive}
         wasHintActive={wasHintActive}
-        fichasPerGroup={fichasPerGroup}
         gameMode={gameMode}
-        // usedHints={usedHints}
+        rogueFloor={rogueFloor}
+        setRogueFloor={setRogueFloor}
+        timer={timer}
+        remainingHints={remainingHints}
+        setRemainingHints={setRemainingHints}
+        realTimer={realTimer}
+        timerInfo={timerInfo}
       />
       <div className='tableroContainer'>
         <Tablero 
@@ -337,6 +385,8 @@ function Juego() {
           fichasPerGroup={fichasPerGroup}
           gameMode={gameMode}
           abiertasRef={abiertasRef}
+          timeoutEsconderStatus={timeoutEsconderStatus}
+          timeoutLockBoard={timeoutLockBoard}
         />
       </div>
     </main>
