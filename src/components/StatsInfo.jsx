@@ -14,7 +14,6 @@ import floorIcon from '../assets/floor_icons/Mesa.webp';
 function StatsInfo({ waiting, totalGroups, qGuessedPairs, reset, hint, giveUp, gameStatus, hintActive, wasHintActive, gameMode, rogueFloor, setRogueFloor, timer, remainingHints, setRemainingHints, realTimer, timerInfo }){
     const timeInGame = gameMode !== GAME_MODES.ROGUE ? getFancyTimeBySecs(timer) : getClockTimeBySecs(timer)
     const [progress, setProgress] = useState((qGuessedPairs / totalGroups) * 100)
-    
     useEffect(() => {
         setProgress((qGuessedPairs / totalGroups) * 100)
     }, [totalGroups, qGuessedPairs])
