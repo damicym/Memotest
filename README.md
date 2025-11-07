@@ -1,13 +1,13 @@
 # 🧠 Memotest
-Un juego tipo **Memotest** desarrollado para **aprender y practicar React**.
+Un juego **Memotest** que desarrollé para **aprender React**.
 
 ## 🚧 Actualmente en desarrollo
-  🔹 **Nuevos modos de juego** - Incluyendo modo de Secuencia Única, y un innovador **Roguelike**.  
+  🔹 **Modo Roguelike** - Un modo de juego de subida de nivel y recolección de items con poderes (la beta está activa en la página).  
   🔹 **Desafíos diarios** - Seeds del modo Roguelike para que todos los jugadores compartan cada día.   
   🔹 **Leaderbaord de jugadores** - Un apartado de lista de jugadores con un puntaje según sus desafíos completados.  
 
 ---
 
 ### 🕹️ Demo activa en Vercel
-**Incluyendo el modo Casual y Secuencia**  
+**Incluyendo la beta de Roguelike**  
 [👉 Jugar en línea](https://memotest-casual.vercel.app/)
